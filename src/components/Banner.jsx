@@ -1,4 +1,3 @@
-import React from "react";
 import IconRating from "../assets/rating.png";
 import IconRatingHalf from "../assets/rating-half.png";
 import ImgTemp from "../assets/temp-1.jpeg";

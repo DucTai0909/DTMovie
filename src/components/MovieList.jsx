@@ -16,17 +16,6 @@ const opts = {
     },
 };
 
-const customStyles = {
-    content: {
-        top: "50%",
-        left: "50%",
-        right: "auto",
-        bottom: "auto",
-        marginRight: "-50%",
-        transform: "translate(-50%, -50%)",
-    },
-};
-
 const responsive = {
     superLargeDesktop: {
         // the naming can be any, depends on you.
@@ -48,9 +37,11 @@ const responsive = {
 };
 
 const MovieList = ({ title, data }) => {
-    const [modalIsOpen, setIsOpen] = useState(false);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [trailerKey, setTrailerKey] = useState("");
 
     const handleTrailer = async (id) => {
+        setTrailerKey("");
         try {
             const url = `https://api.themoviedb.org/3/movie/${id}/videos?language=en-US`;
             const options = {
@@ -62,7 +53,12 @@ const MovieList = ({ title, data }) => {
             };
             const moviekey = await fetch(url, options);
             const data = await moviekey.json();
-        } catch (error) {}
+            setTrailerKey(data.results[0].key);
+            setModalIsOpen(true);
+        } catch (error) {
+            setModalIsOpen(false);
+            console.log(error);
+        }
     };
 
     return (
@@ -77,7 +73,7 @@ const MovieList = ({ title, data }) => {
                         <div
                             key={item.id}
                             className="w-[200px] h-[300px] relative group"
-                            onClick={() =>handleTrailer(item.id)}
+                            onClick={() => handleTrailer(item.id)}
                         >
                             <div
                                 className="group-hover:scale-105 transition-transform
@@ -102,14 +98,26 @@ const MovieList = ({ title, data }) => {
             </Carousel>
             <Modal
                 isOpen={modalIsOpen}
-                onRequestClose={() => setIsOpen(false)}
-                style={customStyles}
+                onRequestClose={() => setModalIsOpen(false)}
+                style={{
+                    overlay: {
+                        position : 'fixed',
+                        zIndex: 9999,
+                    },
+                    content : {
+                        top: "50%",
+                        left: "50%",
+                        right: "auto",
+                        bottom: "auto",
+                        marginRight: "-50%",
+                        transform: "translate(-50%, -50%)",
+                    },
+                }}
                 contentLabel="Example Modal"
             >
                 <YouTube
-                    videoId="2g811Eo7K8U"
+                    videoId={trailerKey}
                     opts={opts}
-                    onReady={this._onReady}
                 />
             </Modal>
         </div>
